@@ -1,0 +1,32 @@
+# engine/suggestions.yaml
+# 这是一个配置文件，定义了哪些情况算“性能问题”以及如何建议
+
+rules:
+  # 规则1：高响应时间
+  - id: high_rt
+    name: 高响应时间
+    condition:
+      metric: avg_response_time_ms    # 要检查的指标
+      operator: ">"                   # 比较操作符
+      threshold: 2000                 # 阈值（毫秒）
+    priority: 1                       # 优先级（1=最高）
+    suggestion: "接口 {transaction_name} 平均响应时间 {value}ms > {threshold}ms，建议检查数据库查询或缓存。"
+
+  # 规则2：高错误率
+  - id: high_error
+    name: 高错误率
+    condition:
+      metric: error_rate_percent
+      operator: ">"
+      threshold: 5.0
+    priority: 2
+    suggestion: "接口 {transaction_name} 错误率达 {value}%，请检查服务端异常日志。"
+
+  # 规则3：极慢响应（更紧急）
+  - id: very_high_rt
+    condition:
+      metric: avg_response_time_ms
+      operator: ">"
+      threshold: 5000
+    priority: 1
+    suggestion: "⚠️ 接口 {transaction_name} 响应极慢（{value}ms），可能存在死锁或外部依赖超时！"
